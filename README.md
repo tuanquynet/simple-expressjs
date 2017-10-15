@@ -1,27 +1,35 @@
-# Build docker file for demo-simpleapp
-
-## Create Dockerfile
 
 
-## Build docker image
-- `docker build -t demo-simpleapp .`
+## Prerequisite
+To be able exec the commands in this demo, you need to install the following tools
+- docker 17+
+- aws cli
 
-## Run docker container
-- `docker run --name demo-simpleapp -p 8080:8080 -e "APP_NAME=demo-simpleapp" -e "SERVER_PORT=8080" -d demo-simpleapp`
+## Install app dependency
+- `yarn`
 
-## Enter container
-- `docker exec -it <container id> /bin/bash`
+## Config build environment
+- Open gulpfile.js
+- Change appName, ecrRepoId to correct value accordingly
 
-## Logs container
-- `docker logs <container id>`
+## Build docker file for <app-name>-<env>
+- `yarn build-app-image`
 
-## Retrieve the docker login command
-- `aws ecr get-login --no-include-email --region ap-southeast-1`
+## Test app locally in docker container
+- Login to aws ecr: `yarn aws-get-login`
+- Run command returned by command above
+- `yarn run-app-in-container`
+- Open browser with "http://localhost:8080"
 
-## Run the docker login command was returned in the previous step
+## Push image onto aws ecr
+- `yarn push-app-image`
 
-## tag your image so you can push the image to this repository
-- `docker tag demo-simpleapp:latest 255179364299.dkr.ecr.ap-southeast-1.amazonaws.com/demo-simpleapp:1.0.0`
-
-## Push image onto aws ecs registry
-- `docker push 255179364299.dkr.ecr.ap-southeast-1.amazonaws.com/demo-simpleapp:1.0.0`
+## General steps:
+- Build docker image: `docker build -t <app-name>-<env> .`
+- Run docker container: `docker run --name <app-name>-<env> -p 8080:8080 -e "APP_NAME=<app-name>-<env>" -e "SERVER_PORT=8080" -d <app-name>-<env>`
+- Enter container: `docker exec -it <container id> /bin/bash`
+- Logs container: `docker logs <container id>`
+- Retrieve the docker login command: `aws ecr get-login --no-include-email --region ap-southeast-1`
+- Run the docker login command was returned in the previous step
+- Tag your image so you can push the image to this repository: `docker tag <app-name>-<env>:<version> <erc-repo-id>.dkr.ecr.ap-southeast-1.amazonaws.com/<app-name>-<env>:<version>`
+- Push image onto aws ecs registry: `docker push <erc-repo-id>.dkr.ecr.ap-southeast-1.amazonaws.com/<app-name>-<env>:<version>`
